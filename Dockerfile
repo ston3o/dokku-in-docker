@@ -1,20 +1,21 @@
 FROM phusion/baseimage:latest
-MAINTAINER contact@stoneo.ovh
+
+ENV DOKKU_VERSION v0.10.3
+ENV GOLANG_VERSION 1.7.5
 
 ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
 RUN locale-gen en_US.*
 
 RUN apt-get update --fix-missing
-RUN apt-get install -y git make curl software-properties-common sudo wget man openssh-server nginx help2man dnsutils apt-transport-https ca-certificates curl lxc iptables net-tools
+RUN apt-get install -y git make curl software-properties-common sudo wget man openssh-server nginx help2man dnsutils apt-transport-https ca-certificates curl lxc iptables net-tools dmsetup
     
-# Dokku installation
-ENV GOLANG_VERSION 1.7.5
+# Install dokku
 RUN wget -qO /tmp/go${GOLANG_VERSION}.linux-amd64.tar.gz https://storage.googleapis.com/golang/go${GOLANG_VERSION}.linux-amd64.tar.gz && tar -C /usr/local -xzf /tmp/go${GOLANG_VERSION}.linux-amd64.tar.gz
 RUN mkdir -p /go/src/github.com/dokku/ && \
     git clone https://github.com/progrium/dokku /go/src/github.com/dokku/dokku && \
     cd /go/src/github.com/dokku/dokku && \
-    git checkout v0.9.4
+    git checkout ${DOKKU_VERSION}
 RUN cd /go/src/github.com/dokku/dokku && \
     make sshcommand plugn sigil version && \
     export PATH=$PATH:/usr/local/go/bin && \
