@@ -24,8 +24,6 @@ RUN cd /go/src/github.com/dokku/dokku && \
 RUN dokku plugin:install-dependencies --core
 RUN useradd -ms /bin/bash syslog
 RUN dokku plugin:install --core
-RUN mkdir -p /etc/service/dokku/
-COPY build/dokku.sh /etc/service/dokku/run
 
 # Install docker
 RUN curl -sSL https://get.docker.com/ | sh
@@ -43,6 +41,15 @@ VOLUME /var/lib/docker
 RUN rm -f /etc/service/sshd/down
 RUN /etc/my_init.d/00_regen_ssh_host_keys.sh
 
+# Nginx
+RUN mkdir /etc/service/nginx
+COPY build/nginx.sh /etc/service/nginx/run
+RUN chmod +x /etc/service/nginx/run
+
+# Startup
+RUN mkdir -p /etc/service/startup/
+COPY build/startup.sh /etc/service/startup/run
+RUN chmod +x /etc/service/startup/run
 RUN touch /root/.firstrun
 
 CMD ["/sbin/my_init"]
